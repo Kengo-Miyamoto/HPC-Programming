@@ -1,6 +1,7 @@
 # Timer Sample: Hand-coded Timers and gprof
-* Author:   Yukihiro Ota (yota@rist.or.jp)
-* Last update: 17th Aug., 2026
+* Author:     Yukihiro Ota (yota@rist.or.jp)
+* Revised by: Kengo Miyamoto (AI-assisted revision)
+* Last update: 19th Aug., 2026
 
 ## Purpose
 This sample demonstrates three basic techniques for measuring the performance of a program, which are the first steps of any tuning work:
