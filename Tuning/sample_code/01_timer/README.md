@@ -7,7 +7,7 @@
 This sample demonstrates three basic techniques for measuring the performance of a program, which are the first steps of any tuning work:
 
 1. **Elapsed (wall-clock) time measurement** with a hand-coded timer inserted in the source code
-2. **CPU time measurement** with a hand-coded timer
+2. **CPU time measurement** with a hand-coded timer inserted in the source code
 3. **Profiling with `gprof`** to find hotspots without modifying the source code
 
 A *hotspot* is a part of a program (a function, loop, or code section) that consumes a disproportionately large share of the total execution time. Because tuning effort pays off most where the program spends most of its time, finding hotspots is the essential first step of performance tuning.
