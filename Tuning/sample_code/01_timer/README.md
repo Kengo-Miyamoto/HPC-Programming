@@ -10,9 +10,9 @@ This sample demonstrates three basic techniques for measuring the performance of
 2. **CPU time measurement** with a hand-coded timer
 3. **Profiling with `gprof`** to find hotspots without modifying the source code
 
-A *hotspot* is a part of a program (a function, loop, or code section) that consumes a disproportionately large share of the total execution time. Because tuning effort pays off most where the program[...]
+A *hotspot* is a part of a program (a function, loop, or code section) that consumes a disproportionately large share of the total execution time. Because tuning effort pays off most where the program spends most of its time, finding hotspots is the essential first step of performance tuning.
 
-The sample program (`main.c` / `main.f90` / `main.cpp`) calls `sub1` and `sub2`, which in turn call `sub3`, with different call counts and workloads. By timing and profiling them, you will learn how to identify which function is a hotspot and why.
+The sample program (`main.c` / `main.f90` / `main.cpp`) calls `sub1` and `sub2`, which in turn call `sub3`, with different call counts and workloads. By timing and profiling them, you will learn how to locate the hotspot of a program.
 
 ## Directory layout
 ```
@@ -21,7 +21,7 @@ The sample program (`main.c` / `main.f90` / `main.cpp`) calls `sub1` and `sub2`,
 │   ├── c/          # C version (default)
 │   ├── fortran/    # Fortran version (pure)
 │   ├── fortran_c/  # Fortran with a C timer (via ISO_C_BINDING)
-│   └── cpp/        # C++ with std::chrono
+│   └── cpp/        # C++ with std::chrono / std::clock
 └── tests/          # Job scripts (run.sh) for each language
     ├── c/
     ├── fortran/
@@ -36,37 +36,33 @@ You can choose C, Fortran (pure), Fortran with C timer, or C++. Select the varia
 | C | hand-coded (POSIX `clock_gettime`) | `src/c/` | `tests/c/` |
 | Fortran | built-in `system_clock` / `cpu_time` | `src/fortran/` | `tests/fortran/` |
 | Fortran + C timer | C timer via ISO_C_BINDING | `src/fortran_c/` | `tests/fortran_c/` |
-| C++ | `std::chrono` | `src/cpp/` | `tests/cpp/` |
+| C++ | `std::chrono` / `std::clock` | `src/cpp/` | `tests/cpp/` |
 
 ## Building and Running
 
-The timer mode is selected by the compiler flags in the `Makefile` (`src/<lang>/Makefile`):
+All language variants use the same `MODE` variable to select the timer mode, both at build time (`make MODE=...`) and at run time (`bash run.sh MODE=...`):
 
-| Mode | C/C++ Flag | Fortran Flag/Mode |
+| Mode | Meaning | Default |
 |---|---|---|
-| Elapsed time (wall clock) | `-DUSE_ELP_TIMER` (default) | `MODE=elp` (default) |
-| CPU time | `-DUSE_CPU_TIMER` | `MODE=cpu` |
-| gprof profiling | `-pg` | `MODE=gprof` |
+| `MODE=elp` | Elapsed time (wall clock) | yes |
+| `MODE=cpu` | CPU time | |
+| `MODE=gprof` | gprof profiling (`-pg`) | |
+
+Internally, `MODE=elp` and `MODE=cpu` define `-DUSE_ELP_TIMER` and `-DUSE_CPU_TIMER` (C/C++) or select the corresponding Fortran timer, and `MODE=gprof` adds the `-pg` compiler flag. The `MODE` argument to `run.sh` tells the job script whether to generate a `gprof` report after the run.
 
 The code has been verified with GNU compilers (11.4.0) on x86-64 systems.
 
 ### General Build Instructions
 
-For **C** and **C++** (simple Makefile with hardcoded flags):
+The procedure is identical for all languages (`<lang>` = `c`, `cpp`, `fortran`, or `fortran_c`):
 ```bash
-$ cd src/<c|cpp>
-$ make                              # Default: elapsed time timer
-$ cd ../../tests/<c|cpp>
-$ bash run.sh
-```
-
-For **Fortran** variants (Makefile with `MODE` variable):
-```bash
-$ cd src/<fortran|fortran_c>
+$ cd src/<lang>
 $ make [MODE=elp|cpu|gprof]         # Default: MODE=elp
-$ cd ../../tests/<fortran|fortran_c>
+$ cd ../../tests/<lang>
 $ bash run.sh [MODE=elp|cpu|gprof]  # Mode parameter optional for run.sh
 ```
+
+When switching modes, always rebuild from scratch with `make veryclean` first.
 
 If linking fails with C or C++, try adding `LIB=-lm -lrt` in the Makefile.
 
@@ -77,15 +73,15 @@ For the C version, the `01_timer` section of `Tuning/sample_code/sample_code.ipy
 ### Step 1: Measure elapsed (wall-clock) time
 
 #### C version
-1. Move to the source directory and build. The default Makefile already sets `-DUSE_ELP_TIMER`:
+1. Move to the source directory and build in elapsed-time mode (the default):
    ```
    $ cd src/c
-   $ make
+   $ make MODE=elp
    ```
 2. Move to the test directory and run the job script:
    ```
    $ cd ../../tests/c
-   $ bash run.sh
+   $ bash run.sh MODE=elp
    ```
 3. Check `outfile`. The elapsed time of each timed section is printed as:
    ```
@@ -131,15 +127,15 @@ For the C version, the `01_timer` section of `Tuning/sample_code/sample_code.ipy
    - Timing results should be equivalent to the C version for the same machine.
 
 #### C++ version
-1. Move to the source directory and build. The default Makefile already sets `-DUSE_ELP_TIMER`:
+1. Move to the source directory and build in elapsed-time mode (the default):
    ```
    $ cd src/cpp
-   $ make
+   $ make MODE=elp
    ```
 2. Move to the test directory and run the job script:
    ```
    $ cd ../../tests/cpp
-   $ bash run.sh
+   $ bash run.sh MODE=elp
    ```
 3. Check `outfile`. The elapsed time is printed as:
    ```
@@ -160,7 +156,7 @@ For the C version, the `01_timer` section of `Tuning/sample_code/sample_code.ipy
 2. Move to the test directory and rerun:
    ```
    $ cd ../../tests/c
-   $ bash run.sh
+   $ bash run.sh MODE=cpu
    ```
 3. Check `outfile` for:
    ```
@@ -207,12 +203,23 @@ For the C version, the `01_timer` section of `Tuning/sample_code/sample_code.ipy
 4. Compare results with the Fortran-only CPU time measurement to verify consistency.
 
 #### C++ version
-- C++ `std::chrono::steady_clock` measures wall-clock elapsed time only.
-- To measure CPU time with C++, you would need to:
-  - Use platform-specific APIs (e.g., POSIX `clock_gettime()`)
-  - Link with a C timer library and call it from C++
-  - Use an external profiling tool like `gprof` or `perf`
-- The current C++ sample focuses on elapsed time measurement.
+1. Go back to the source directory and rebuild in CPU-timer mode:
+   ```bash
+   $ cd src/cpp
+   $ make veryclean
+   $ make MODE=cpu
+   ```
+2. Move to the test directory and rerun:
+   ```
+   $ cd ../../tests/cpp
+   $ bash run.sh MODE=cpu
+   ```
+3. Check `outfile` for:
+   ```
+   CPU time (sec)     = ...
+   ```
+   - Uses `std::clock()` from the C++ standard library (`<ctime>`).
+4. Compare CPU time with the elapsed time from Step 1.
 
 ### Understanding CPU Time vs. Elapsed Time
 
@@ -238,9 +245,9 @@ For a **multi-threaded program** (e.g., with OpenMP):
 2. Move to the test directory and run the job script in profiling mode:
    ```
    $ cd ../../tests/c
-   $ bash run.sh
+   $ bash run.sh MODE=gprof
    ```
-   - `run.sh` automatically sleeps and runs `gprof` if the binary was compiled with `-pg`.
+   - In `MODE=gprof`, `run.sh` automatically sleeps and runs `gprof` after the execution.
 3. In profiling mode, the output includes:
    - `outfile`: program output (`a[0] = ...` lines)
    - `gmon.out`: raw profiling data
@@ -279,21 +286,15 @@ For a **multi-threaded program** (e.g., with OpenMP):
 1. Go back to the source directory and rebuild with profiling mode:
    ```
    $ cd src/cpp
-   $ make veryclean
+   $ make veryclean && make MODE=gprof
    ```
-2. **Edit the Makefile** to enable profiling by uncommenting the `-pg` flag in `CXXFLAGS`.
-3. Rebuild and rerun:
+2. Move to the test directory and run the job script in profiling mode:
    ```
-   $ make
    $ cd ../../tests/cpp
-   $ bash run.sh
+   $ bash run.sh MODE=gprof
    ```
-   - This will generate `gmon.out` and the program output in `outfile`.
-4. Manually run `gprof` to generate the report:
-   ```
-   $ gprof ../../src/cpp/run.x gmon.out > prof.out
-   $ cat prof.out
-   ```
+3. `run.sh` automatically handles profiling: execution, sleep, and `gprof` report generation (`gmon.out` and `prof.out`).
+4. Examine `prof.out` to identify hotspots.
 
 ### Cleaning Up Profiling Data
 
@@ -329,11 +330,11 @@ For a **multi-threaded program** (e.g., with OpenMP):
 
 ### C++
 - **Elapsed timer**: `std::chrono::steady_clock` (C++11 standard library)
-- **CPU timer**: Not implemented (would require platform-specific APIs or external libraries)
+- **CPU timer**: `std::clock()` (`<ctime>`, C++ standard library)
 - **Files**: `src/cpp/main.cpp`
 - **Compilation**: No external timer library; uses standard C++11 features
 - **Advantages**: Modern, type-safe, header-only, portable, no external dependencies
-- **Notes**: `std::chrono` provides high-resolution timing and handles platform differences transparently
+- **Notes**: `std::chrono` provides high-resolution timing and handles platform differences transparently; note that `std::clock()` resolution depends on `CLOCKS_PER_SEC`
 
 ## Questions to consider
 1. Which function is the hotspot, and how do the call counts of `sub1`, `sub2`, and `sub3` explain it?
