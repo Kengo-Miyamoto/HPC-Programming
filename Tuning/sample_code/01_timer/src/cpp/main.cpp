@@ -7,6 +7,7 @@
 #include <cmath>
 #include <cstdio>
 #include <cstdlib>
+#include <ctime>
 #include <iostream>
 #include <vector>
 //#include <thread>
@@ -26,38 +27,51 @@ int main ( int argc, char* argv[] )
 
   // set values -- already zero-initialized via std::vector
 
-  // routine 1 
+#if defined(USE_CPU_TIMER)
+  std::clock_t cpu1, cpu2;
+#endif
 #if defined(USE_ELP_TIMER)
-  {
-     const auto elp1 = std::chrono::steady_clock::now();
+  std::chrono::steady_clock::time_point elp1, elp2;
+#endif
 
-     for ( int k=0; k<100000; ++k ) sub1 ( a.data(), nn ) ;
+  // routine 1 
+#if defined(USE_CPU_TIMER)
+  cpu1 = std::clock();
+#endif
+#if defined(USE_ELP_TIMER)
+  elp1 = std::chrono::steady_clock::now();
+#endif
 
-     const auto elp2 = std::chrono::steady_clock::now();
-     const std::chrono::duration<double> elapsed = elp2 - elp1;
-
-     fprintf (stdout, "sub1: Elapsed time (sec)   = %17.6f\n", elapsed.count()) ;
-  }
-#else
   for ( int k=0; k<100000; ++k ) sub1 ( a.data(), nn ) ;
+
+#if defined(USE_CPU_TIMER)
+  cpu2 = std::clock();
+  fprintf (stdout, "sub1: CPU time (sec)     = %17.6f\n", static_cast<double>(cpu2 - cpu1) / CLOCKS_PER_SEC) ;
+#endif
+#if defined(USE_ELP_TIMER)
+  elp2 = std::chrono::steady_clock::now();
+  fprintf (stdout, "sub1: Elapsed time (sec) = %17.6f\n", std::chrono::duration<double>(elp2 - elp1).count()) ;
 #endif
 
   fprintf (stdout, "a[0] = %13.6f\n", a[0] ) ;
 
   // routine 2 
+#if defined(USE_CPU_TIMER)
+  cpu1 = std::clock();
+#endif
 #if defined(USE_ELP_TIMER)
-  {
-     const auto elp1 = std::chrono::steady_clock::now();
+  elp1 = std::chrono::steady_clock::now();
+#endif
 
-     for ( int k=0; k<200000; ++k ) sub2 ( a.data(), nn ) ;
-
-     const auto elp2 = std::chrono::steady_clock::now();
-     const std::chrono::duration<double> elapsed = elp2 - elp1;
-
-     fprintf (stdout, "sub2: Elapsed time (sec)   = %17.6f\n", elapsed.count()) ;
-  }
-#else
   for ( int k=0; k<200000; ++k ) sub2 ( a.data(), nn ) ;
+
+#if defined(USE_CPU_TIMER)
+  cpu2 = std::clock();
+  fprintf (stdout, "sub2: CPU time (sec)     = %17.6f\n", static_cast<double>(cpu2 - cpu1) / CLOCKS_PER_SEC) ;
+#endif
+#if defined(USE_ELP_TIMER)
+  elp2 = std::chrono::steady_clock::now();
+  fprintf (stdout, "sub2: Elapsed time (sec) = %17.6f\n", std::chrono::duration<double>(elp2 - elp1).count()) ;
 #endif
 
   fprintf (stdout, "a[0] = %13.6f\n", a[0] ) ;
