@@ -1,6 +1,6 @@
 #!/bin/bash
 
-## Select timer mode: bash run.sh [MODE=elp|gprof]  (default: elp)
+## Select timer mode: bash run.sh [MODE=elp|cpu|gprof]  (default: elp)
 ## Or: MODE=gprof bash run.sh
 for arg in "$@"; do
   case $arg in
@@ -10,8 +10,8 @@ done
 MODE=${MODE:-elp}
 
 case $MODE in
-  elp|gprof) ;;
-  *) echo "Unknown MODE '$MODE'. Use MODE=elp or MODE=gprof" >&2; exit 1 ;;
+  elp|cpu|gprof) ;;
+  *) echo "Unknown MODE '$MODE'. Use MODE=elp, MODE=cpu, or MODE=gprof" >&2; exit 1 ;;
 esac
 
 echo -n "START: " 
