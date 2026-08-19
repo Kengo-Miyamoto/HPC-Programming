@@ -85,7 +85,7 @@ For the C version, the `01_timer` section of `Tuning/sample_code/sample_code.ipy
    ```
 3. Check `outfile`. The elapsed time of each timed section is printed as:
    ```
-   Elapsed time (sec) = ...
+   Section name: Elapsed time (sec) = ...
    ```
 4. Compare the elapsed times of the two timed loops and consider which is more expensive and why.
 
@@ -102,7 +102,7 @@ For the C version, the `01_timer` section of `Tuning/sample_code/sample_code.ipy
    ```
 3. Check `outfile`. The elapsed time is printed as:
    ```
-   Elapsed time (sec)     = ...
+   Section name: Elapsed time (sec)     = ...
    ```
    - Uses Fortran intrinsic `system_clock()` for wall-clock timing.
 4. Compare the elapsed times and consider which routine is more expensive.
@@ -120,7 +120,7 @@ For the C version, the `01_timer` section of `Tuning/sample_code/sample_code.ipy
    ```
 3. Check `outfile`. The elapsed time is printed as:
    ```
-   Elapsed time (sec)     = ...
+   Section name: Elapsed time (sec)     = ...
    ```
    - This variant uses ISO_C_BINDING to call the C timer functions (`get_elp_time()`) from Fortran.
    - Demonstrates language interoperability and comparison with the C version.
@@ -139,7 +139,7 @@ For the C version, the `01_timer` section of `Tuning/sample_code/sample_code.ipy
    ```
 3. Check `outfile`. The elapsed time is printed as:
    ```
-   Elapsed time (sec)   = ...
+   Section name: Elapsed time (sec)   = ...
    ```
    - Uses `std::chrono::steady_clock` for precise, portable timing without external dependencies.
 4. The C++ version uses modern C++11 standard library features.
@@ -160,7 +160,7 @@ For the C version, the `01_timer` section of `Tuning/sample_code/sample_code.ipy
    ```
 3. Check `outfile` for:
    ```
-   CPU time (sec)     = ...
+   Section name: CPU time (sec)     = ...
    ```
 4. Compare CPU time with the elapsed time from Step 1.
 
@@ -178,7 +178,7 @@ For the C version, the `01_timer` section of `Tuning/sample_code/sample_code.ipy
    ```
 3. Check `outfile` for:
    ```
-   CPU time (sec)         = ...
+   Section name: CPU time (sec)         = ...
    ```
    - Uses Fortran intrinsic `cpu_time()`.
 4. Compare CPU time with the elapsed time from Step 1.
@@ -197,7 +197,7 @@ For the C version, the `01_timer` section of `Tuning/sample_code/sample_code.ipy
    ```
 3. Check `outfile` for:
    ```
-   CPU time (sec)         = ...
+   Section name: CPU time (sec)         = ...
    ```
    - Uses the C timer function `get_cpu_time()` called from Fortran via ISO_C_BINDING.
 4. Compare results with the Fortran-only CPU time measurement to verify consistency.
@@ -216,7 +216,7 @@ For the C version, the `01_timer` section of `Tuning/sample_code/sample_code.ipy
    ```
 3. Check `outfile` for:
    ```
-   CPU time (sec)     = ...
+   Section name: CPU time (sec)     = ...
    ```
    - Uses `std::clock()` from the C++ standard library (`<ctime>`).
 4. Compare CPU time with the elapsed time from Step 1.
