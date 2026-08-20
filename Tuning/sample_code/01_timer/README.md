@@ -66,7 +66,7 @@ When switching modes, always rebuild from scratch with `make veryclean` first.
 
 If linking fails with C or C++, try adding `LIB=-lm -lrt` in the Makefile.
 
-For the C version, the `01_timer` section of `Tuning/sample_code/sample_code.ipynb` automates the same three steps below by rebuilding with `make -C src/c MODE=elp|cpu|gprof` and running `tests/c/run.sh`.
+For the C version, the `01_timer` section of `Tuning/sample_code/sample_code.ipynb` automates the same three steps described below by rebuilding with `make -C src/c veryclean && make -C src/c MODE=elp|cpu|gprof` and then running `bash run.sh MODE=elp|cpu|gprof` from the `tests/c` directory.
 
 ## Exercise steps
 
