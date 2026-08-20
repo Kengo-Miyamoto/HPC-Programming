@@ -48,14 +48,14 @@ All language variants use the same `MODE` variable to select the timer mode, bot
 | `MODE=cpu` | CPU time | |
 | `MODE=gprof` | gprof profiling (`-pg`) | |
 
-Internally, `MODE=elp` and `MODE=cpu` define `-DUSE_ELP_TIMER` and `-DUSE_CPU_TIMER` (C/C++) or select the corresponding Fortran timer, and `MODE=gprof` adds the `-pg` compiler flag. The `MODE` argument to `run.sh` selects the corresponding run-time behavior (e.g., generating the `gprof` report).
+Internally, `MODE=elp` and `MODE=cpu` define `-DUSE_ELP_TIMER` and `-DUSE_CPU_TIMER` (C/C++) or select the corresponding Fortran timer, and `MODE=gprof` adds the `-pg` compiler flag. The `MODE` argument to `run.sh` is optional; it mainly controls the gprof post-processing step.
 
 The code has been verified with GNU compilers (11.4.0) on x86-64 systems.
 
 ### General Build Instructions
 
 The procedure is identical for all languages (`<lang>` = `c`, `cpp`, `fortran`, or `fortran_c`):
-```bash
+```text
 $ cd src/<lang>
 $ make [MODE=elp|cpu|gprof]         # Default: MODE=elp
 $ cd ../../tests/<lang>
