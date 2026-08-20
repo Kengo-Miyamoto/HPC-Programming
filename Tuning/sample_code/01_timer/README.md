@@ -10,9 +10,9 @@ This sample demonstrates three basic techniques for measuring the performance of
 2. **CPU time measurement** with a hand-coded timer inserted in the source code
 3. **Profiling with `gprof`** to find hotspots without modifying the source code
 
-A *hotspot* is a part of a program (a function, loop, or code section) that consumes a disproportionately large share of the total execution time. Because tuning effort pays off most where the program spends most of its time, finding hotspots is the essential first step of performance tuning.
+A *hotspot* is a part of a program (a function, loop, or code section) that consumes a disproportionately large share of the total execution time. Because tuning effort pays off most where the program spends most of its time, identifying hotspots is the first step of any tuning work.
 
-The sample program (`main.c` / `main.f90` / `main.cpp`) calls `sub1` and `sub2`, which in turn call `sub3`, with different call counts and workloads. By timing and profiling them, you will learn how to locate the hotspot of a program.
+The sample program (`main.c` / `main.f90` / `main.cpp`) calls `sub1` and `sub2`, which in turn call `sub3`, with different call counts and workloads. By timing and profiling them, you will learn how to locate hotspots.
 
 ## Directory layout
 ```
@@ -48,7 +48,7 @@ All language variants use the same `MODE` variable to select the timer mode, bot
 | `MODE=cpu` | CPU time | |
 | `MODE=gprof` | gprof profiling (`-pg`) | |
 
-Internally, `MODE=elp` and `MODE=cpu` define `-DUSE_ELP_TIMER` and `-DUSE_CPU_TIMER` (C/C++) or select the corresponding Fortran timer, and `MODE=gprof` adds the `-pg` compiler flag. The `MODE` argument to `run.sh` is optional; it mainly controls the gprof post-processing step.
+Internally, `MODE=elp` and `MODE=cpu` define `-DUSE_ELP_TIMER` and `-DUSE_CPU_TIMER` (C/C++) or select the corresponding Fortran timer, and `MODE=gprof` adds the `-pg` compiler flag. The `MODE` argument to `run.sh` selects the matching run-time behavior.
 
 The code has been verified with GNU compilers (11.4.0) on x86-64 systems.
 
@@ -66,7 +66,7 @@ When switching modes, always rebuild from scratch with `make veryclean` first.
 
 If linking fails with C or C++, try adding `LIB=-lm -lrt` in the Makefile.
 
-For the C version, the `01_timer` section of `Tuning/sample_code/sample_code.ipynb` automates the same three steps described below by rebuilding with `make veryclean && make MODE=elp|cpu|gprof` from within the notebook.
+For the C version, the `01_timer` section of `Tuning/sample_code/sample_code.ipynb` automates the same three steps described below by rebuilding with `make veryclean && make MODE=elp|cpu|gprof` from the notebook.
 
 ## Exercise steps
 
@@ -152,7 +152,7 @@ For the C version, the `01_timer` section of `Tuning/sample_code/sample_code.ipy
    $ cd src/c
    $ make veryclean && make MODE=cpu
    ```
-2. Move to the test directory and rerun:
+2. Move to the test directory and run the job script in CPU-timer mode:
    ```
    $ cd ../../tests/c
    $ bash run.sh MODE=cpu
@@ -169,7 +169,7 @@ For the C version, the `01_timer` section of `Tuning/sample_code/sample_code.ipy
    $ cd src/fortran
    $ make veryclean && make MODE=cpu
    ```
-2. Move to the test directory and rerun:
+2. Move to the test directory and run the job script in CPU-timer mode:
    ```
    $ cd ../../tests/fortran
    $ bash run.sh MODE=cpu
@@ -187,7 +187,7 @@ For the C version, the `01_timer` section of `Tuning/sample_code/sample_code.ipy
    $ cd src/fortran_c
    $ make veryclean && make MODE=cpu
    ```
-2. Move to the test directory and rerun:
+2. Move to the test directory and run the job script in CPU-timer mode:
    ```
    $ cd ../../tests/fortran_c
    $ bash run.sh MODE=cpu
@@ -205,7 +205,7 @@ For the C version, the `01_timer` section of `Tuning/sample_code/sample_code.ipy
    $ cd src/cpp
    $ make veryclean && make MODE=cpu
    ```
-2. Move to the test directory and rerun:
+2. Move to the test directory and run the job script in CPU-timer mode:
    ```
    $ cd ../../tests/cpp
    $ bash run.sh MODE=cpu
