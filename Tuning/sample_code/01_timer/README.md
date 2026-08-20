@@ -10,9 +10,9 @@ This sample demonstrates three basic techniques for measuring the performance of
 2. **CPU time measurement** with a hand-coded timer inserted in the source code
 3. **Profiling with `gprof`** to find hotspots without modifying the source code
 
-A *hotspot* is a part of a program (a function, loop, or code section) that consumes a disproportionately large share of the total execution time. Because tuning effort pays off most where the program spends the most time, finding hotspots is the essential first step of performance tuning.
+A *hotspot* is a part of a program (a function, loop, or code section) that consumes a disproportionately large share of the total execution time. Because tuning effort pays off most where the program spends most of its time, finding hotspots is the essential first step of performance tuning.
 
-The sample program (`main.c` / `main.f90` / `main.cpp`) calls `sub1` and `sub2`, which in turn call `sub3`, with different call counts and workloads. By timing and profiling them, you will learn how to locate hotspots.
+The sample program (`main.c` / `main.f90` / `main.cpp`) calls `sub1` and `sub2`, which in turn call `sub3`, with different call counts and workloads. By timing and profiling them, you will learn how to locate the hotspot of a program.
 
 ## Directory layout
 ```
@@ -48,7 +48,7 @@ All language variants use the same `MODE` variable to select the timer mode, bot
 | `MODE=cpu` | CPU time | |
 | `MODE=gprof` | gprof profiling (`-pg`) | |
 
-Internally, `MODE=elp` and `MODE=cpu` define `-DUSE_ELP_TIMER` and `-DUSE_CPU_TIMER` (C/C++) or select the corresponding Fortran timer, and `MODE=gprof` adds the `-pg` compiler flag. The `MODE` argument for `run.sh` is optional.
+Internally, `MODE=elp` and `MODE=cpu` define `-DUSE_ELP_TIMER` and `-DUSE_CPU_TIMER` (C/C++) or select the corresponding Fortran timer, and `MODE=gprof` adds the `-pg` compiler flag. The `MODE` argument to `run.sh` selects the corresponding run-time behavior (e.g., generating the `gprof` report).
 
 The code has been verified with GNU compilers (11.4.0) on x86-64 systems.
 
@@ -148,7 +148,7 @@ For the C version, the `01_timer` section of `Tuning/sample_code/sample_code.ipy
 
 #### C version
 1. Go back to the source directory and rebuild in CPU-timer mode:
-   ```bash
+   ```
    $ cd src/c
    $ make veryclean && make MODE=cpu
    ```
@@ -165,7 +165,7 @@ For the C version, the `01_timer` section of `Tuning/sample_code/sample_code.ipy
 
 #### Fortran version
 1. Go back to the source directory and rebuild in CPU-timer mode:
-   ```bash
+   ```
    $ cd src/fortran
    $ make veryclean && make MODE=cpu
    ```
@@ -183,7 +183,7 @@ For the C version, the `01_timer` section of `Tuning/sample_code/sample_code.ipy
 
 #### Fortran with C timer version
 1. Go back to the source directory and rebuild in CPU-timer mode:
-   ```bash
+   ```
    $ cd src/fortran_c
    $ make veryclean && make MODE=cpu
    ```
@@ -201,7 +201,7 @@ For the C version, the `01_timer` section of `Tuning/sample_code/sample_code.ipy
 
 #### C++ version
 1. Go back to the source directory and rebuild in CPU-timer mode:
-   ```bash
+   ```
    $ cd src/cpp
    $ make veryclean && make MODE=cpu
    ```
