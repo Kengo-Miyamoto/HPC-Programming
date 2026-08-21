@@ -3,7 +3,7 @@ FC=gfortran
 ## Select timer mode: make [MODE=elp|cpu|gprof]  (default: elp)
 MODE ?= elp
 
-BASE_FFLAGS=-g -Wall -cpp -O0
+BASE_FFLAGS=-g -Wall -cpp -O0 -std=f2008
 
 ifeq ($(MODE),elp)
   ## Use of timer for Elapsed time
