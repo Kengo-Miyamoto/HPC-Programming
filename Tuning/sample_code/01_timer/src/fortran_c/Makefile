@@ -4,7 +4,7 @@ FC=gfortran
 MODE ?= elp
 
 BASE_FFLAGS=-g -Wall -cpp -O0
-BASE_CFLAGS=-g -Wall -O0 -std=gnu11
+BASE_CFLAGS=-g -Wall -O0 -std=gnu11 -I../c
 
 ifeq ($(MODE),elp)
   ## Use of timer for Elapsed time
@@ -27,10 +27,10 @@ SRC = \
 	main.f90
 
 CSRC= \
-	timer.c
+	../c/timer.c
 
 OBJS = $(SRC:.f90=.o)
-COBJS= $(CSRC:.c=.o)
+COBJS= timer.o
 
 
 .SUFFIXES: .f90 .c .o
@@ -46,7 +46,8 @@ run.x: $(OBJS) $(COBJS)
 
 main.o: main.f90
 
-timer.o: timer.h timer.c
+timer.o: ../c/timer.h ../c/timer.c
+	$(CC) $(CFLAGS) -c ../c/timer.c -o $@
 
 .PHONY: clean
 clean:

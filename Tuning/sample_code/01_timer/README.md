@@ -18,9 +18,9 @@ The sample program (`main.c` / `main.f90` / `main.cpp`) calls `sub1` and `sub2`,
 ```
 01_timer/
 ├── src/            # Source code and Makefiles
-│   ├── c/          # C version (default)
+│   ├── c/          # C version (default); timer.c/timer.h shared with fortran_c
 │   ├── fortran/    # Fortran version (pure)
-│   ├── fortran_c/  # Fortran with a C timer (via ISO_C_BINDING)
+│   ├── fortran_c/  # Fortran with a C timer (via ISO_C_BINDING); reuses src/c/timer.c and src/c/timer.h
 │   └── cpp/        # C++ with std::chrono / std::clock
 └── tests/          # Job scripts (run.sh) for each language
     ├── c/
@@ -319,7 +319,8 @@ For a **multi-threaded program** (e.g., with OpenMP):
 
 ### Fortran with C timer
 - **Timer**: Same POSIX C timer as the C version, called via ISO_C_BINDING (Fortran2003+)
-- **Files**: `src/fortran_c/main.f90`, `src/fortran_c/timer.c`, `src/fortran_c/timer.h`
+- **Files**: `src/fortran_c/main.f90`, `src/c/timer.c`, `src/c/timer.h`
+  (timer sources are shared with the C variant — no duplicated copies in `src/fortran_c/`)
 - **Compilation**: Fortran and C files compiled separately, then linked
 - **Advantages**: Demonstrates language interoperability, allows direct comparison with C implementation
 - **Use cases**: Learning mixed-language programming, verifying consistency between implementations
