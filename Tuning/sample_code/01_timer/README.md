@@ -12,7 +12,7 @@ This sample demonstrates three basic techniques for measuring the performance of
 
 A *hotspot* is a part of a program (a function, loop, or code section) that consumes a disproportionately large share of the total execution time. Because tuning effort pays off most where the program spends most of its time, finding hotspots is the essential first step of performance tuning.
 
-The sample program (`main.c` / `main.f90` / `main.cpp`) calls `sub1` and `sub2`, which in turn call `sub3`, with different call counts and workloads. By timing and profiling them, you will learn how to locate the hotspot.
+The sample program (`main.c` / `main.f90` / `main.cpp`) calls `sub1` and `sub2`, which in turn call `sub3`, with different call counts and workloads. By timing and profiling them, you will learn how to identify which part of a program dominates the execution time.
 
 ## Directory layout
 ```
@@ -20,7 +20,7 @@ The sample program (`main.c` / `main.f90` / `main.cpp`) calls `sub1` and `sub2`,
 ├── src/            # Source code and Makefiles
 │   ├── c/          # C version (default); timer.c/timer.h shared with fortran_c
 │   ├── fortran/    # Fortran version (pure)
-│   ├── fortran_c/  # Fortran with a C timer (via ISO_C_BINDING); reuses src/c/timer.c and src/c/timer.h
+│   ├── fortran_c/  # Fortran with a C timer (via iso_c_binding); reuses src/c/timer.c and src/c/timer.h
 │   └── cpp/        # C++ with std::chrono / std::clock
 └── tests/          # Job scripts (run.sh) for each language
     ├── c/
@@ -35,7 +35,7 @@ You can choose C, Fortran (pure), Fortran with C timer, or C++. Select the varia
 |---|---|---|---|
 | C | hand-coded (POSIX `clock_gettime`) | `src/c/` | `tests/c/` |
 | Fortran | built-in `system_clock` / `cpu_time` | `src/fortran/` | `tests/fortran/` |
-| Fortran + C timer | C timer via ISO_C_BINDING | `src/fortran_c/` | `tests/fortran_c/` |
+| Fortran + C timer | C timer via iso_c_binding | `src/fortran_c/` | `tests/fortran_c/` |
 | C++ | `std::chrono` / `std::clock` | `src/cpp/` | `tests/cpp/` |
 
 ## Building and Running
@@ -48,7 +48,7 @@ All language variants use the same `MODE` variable to select the timer mode, bot
 | `MODE=cpu` | CPU time | |
 | `MODE=gprof` | gprof profiling (`-pg`) | |
 
-Internally, `MODE=elp` and `MODE=cpu` define `-DUSE_ELP_TIMER` and `-DUSE_CPU_TIMER` (C/C++) or select the corresponding Fortran timer, and `MODE=gprof` adds the `-pg` compiler flag. The `MODE` argument to `run.sh` mainly controls the post-processing (e.g., running `gprof` after execution).
+Internally, `MODE=elp` and `MODE=cpu` define `-DUSE_ELP_TIMER` and `-DUSE_CPU_TIMER` (C/C++) or select the corresponding Fortran timer, and `MODE=gprof` adds the `-pg` compiler flag. The `MODE` argument to `run.sh` is optional; the default is `MODE=elp`.
 
 The code has been verified with GNU compilers (11.4.0) on x86-64 systems.
 
@@ -66,7 +66,7 @@ When switching modes, always rebuild from scratch with `make veryclean` first.
 
 If linking fails with C or C++, try adding `LIB=-lm -lrt` in the Makefile.
 
-For the C version, the `01_timer` section of `Tuning/sample_code/sample_code.ipynb` automates the same three steps described below by rebuilding with `make veryclean && make MODE=elp|cpu|gprof` from a notebook.
+For the C version, the `01_timer` section of `Tuning/sample_code/sample_code.ipynb` automates the same three steps described below by rebuilding with `make veryclean && make MODE=elp|cpu|gprof` from the notebook.
 
 ## Exercise steps
 
@@ -122,7 +122,7 @@ For the C version, the `01_timer` section of `Tuning/sample_code/sample_code.ipy
    ```
    Section name: Elapsed time (sec)     = ...
    ```
-   - This variant uses ISO_C_BINDING to call the C timer functions (`get_elp_time()`) from Fortran.
+   - This variant uses iso_c_binding to call the C timer functions (`get_elp_time()`) from Fortran.
    - Demonstrates language interoperability and comparison with the C version.
    - Timing results should be equivalent to the C version for the same machine.
 
@@ -196,7 +196,7 @@ For the C version, the `01_timer` section of `Tuning/sample_code/sample_code.ipy
    ```
    Section name: CPU time (sec)         = ...
    ```
-   - Uses the C timer function `get_cpu_time()` called from Fortran via ISO_C_BINDING.
+   - Uses the C timer function `get_cpu_time()` called from Fortran via iso_c_binding.
 4. Compare results with the Fortran-only CPU time measurement to verify consistency.
 
 #### C++ version
@@ -318,7 +318,7 @@ For a **multi-threaded program** (e.g., with OpenMP):
 - **Advantages**: Simple, language-native, no external dependencies
 
 ### Fortran with C timer
-- **Timer**: Same POSIX C timer as the C version, called via ISO_C_BINDING (Fortran2003+)
+- **Timer**: Same POSIX C timer as the C version, called via iso_c_binding (Fortran2008+)
 - **Files**: `src/fortran_c/main.f90`, `src/c/timer.c`, `src/c/timer.h`
   (timer sources are shared with the C variant — no duplicated copies in `src/fortran_c/`)
 - **Compilation**: Fortran and C files compiled separately, then linked
