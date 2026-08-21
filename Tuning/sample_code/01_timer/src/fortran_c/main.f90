@@ -88,8 +88,8 @@ end
 subroutine sub1 ( a, nn )
    use iso_fortran_env, only: real64
    implicit none
-   real(real64),intent(inout) :: a(nn)
    integer,intent(in) :: nn
+   real(real64),intent(inout) :: a(nn)
    !*** local variables ***
    integer :: i, k
 
@@ -109,8 +109,8 @@ end subroutine
 subroutine sub2 ( a, nn )
    use iso_fortran_env, only: real64
    implicit none
-   real(real64),intent(inout) :: a(nn)
    integer,intent(in) :: nn
+   real(real64),intent(inout) :: a(nn)
    !*** local variables ***
    integer :: i, k
 
@@ -132,8 +132,8 @@ end subroutine
 subroutine sub3 ( a, nn )
    use iso_fortran_env, only: real64
    implicit none
-   real(real64),intent(inout) :: a(nn)
    integer,intent(in) :: nn
+   real(real64),intent(inout) :: a(nn)
    !*** local variables ***
    integer :: i
 
