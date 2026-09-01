@@ -1,7 +1,7 @@
 # Timer Sample: Hand-coded Timers and gprof
 * Author:     Yukihiro Ota (yota@rist.or.jp)
 * Revised by: Kengo Miyamoto (AI-assisted revision)
-* Last update: 19th Aug., 2026
+* Last update: 1st Sep., 2026
 
 ## Purpose
 This sample demonstrates three basic techniques for measuring the performance of a program, which are the first steps of any tuning work:
@@ -10,9 +10,9 @@ This sample demonstrates three basic techniques for measuring the performance of
 2. **CPU time measurement** with a hand-coded timer inserted in the source code
 3. **Profiling with `gprof`** to find hotspots without modifying the source code
 
-A *hotspot* is a part of a program (a function, loop, or code section) that consumes a disproportionately large share of the total execution time. Because tuning effort pays off most where the program spends most of its time, identifying hotspots is the essential first step of any performance tuning work.
+A *hotspot* is a part of a program (a function, loop, or code section) that consumes a disproportionately large share of the total execution time. Because tuning effort pays off most where the program spends most of its time, finding hotspots is the essential first step of performance tuning.
 
-The sample program (`main.c` / `main.f90` / `main.cpp`) calls `sub1` and `sub2`, which in turn call `sub3`, with different call counts and workloads. By timing and profiling them, you will learn how to identify hotspots.
+The sample program (`main.c` / `main.f90` / `main.cpp`) calls `sub1` and `sub2`, which in turn call `sub3`, with different call counts and workloads. By timing and profiling them, you will learn how to locate the routines that dominate the execution time.
 
 ## Directory layout
 ```
@@ -48,7 +48,7 @@ All language variants use the same `MODE` variable to select the **build configu
 | `MODE=cpu` | Build the CPU-time timer version | |
 | `MODE=gprof` | Build with `-pg` for `gprof` profiling | |
 
-Internally, `MODE=elp` and `MODE=cpu` define `-DUSE_ELP_TIMER` and `-DUSE_CPU_TIMER` (C/C++) or select the corresponding Fortran timer, and `MODE=gprof` adds the `-pg` compiler flag. `bash run.sh` accepts the same `MODE` values; only `MODE=gprof` changes the run-time behavior (it triggers `gprof` post-processing).
+Internally, `MODE=elp` and `MODE=cpu` define `-DUSE_ELP_TIMER` and `-DUSE_CPU_TIMER` (C/C++) or select the corresponding Fortran timer, and `MODE=gprof` adds the `-pg` compiler flag. `bash run.sh` accepts the same `MODE=...` argument; only `MODE=gprof` changes its behavior (it runs `gprof` after execution).
 
 To switch between `elp`, `cpu`, and `gprof`, rebuild from scratch each time:
 ```text
@@ -90,7 +90,8 @@ For the C version, the `01_timer` section of `Tuning/sample_code/sample_code.ipy
    ```
    Section name: Elapsed time (sec) = ...
    ```
-4. Compare the elapsed times of the two timed loops and consider which is more expensive and why.
+   - Uses POSIX `clock_gettime()` for wall-clock timing.
+4. Compare the elapsed times of the two timed loops and consider which is more expensive.
 
 #### Fortran version
 1. Move to the source directory and build in elapsed-time mode (the default):
@@ -128,6 +129,7 @@ For the C version, the `01_timer` section of `Tuning/sample_code/sample_code.ipy
    - This variant uses iso_c_binding to call the C timer functions (`get_elp_time()`) from Fortran.
    - Demonstrates language interoperability and comparison with the C version.
    - Timing results should be equivalent to the C version for the same machine.
+4. Compare the elapsed times and consider which routine is more expensive.
 
 #### C++ version
 1. Move to the source directory and build in elapsed-time mode (the default):
@@ -145,7 +147,7 @@ For the C version, the `01_timer` section of `Tuning/sample_code/sample_code.ipy
    Section name: Elapsed time (sec)   = ...
    ```
    - Uses `std::chrono::steady_clock` for precise, portable timing without external dependencies.
-4. The C++ version uses modern C++11 standard library features.
+4. Compare the elapsed times and consider which routine is more expensive.
 
 ### Step 2: Measure CPU time
 
