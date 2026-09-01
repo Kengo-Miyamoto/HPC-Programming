@@ -3,10 +3,7 @@ CC=gcc
 ## Select timer mode: make [MODE=elp|cpu|gprof]  (default: elp)
 MODE ?= elp
 
-## -std=gnu17: modern GNU C dialect (default of recent gcc)
-## -D_POSIX_C_SOURCE=199309L: explicitly require the POSIX.1b timer API
-##   (clock_gettime); redundant with a gnu* dialect but self-documenting
-BASE_CFLAGS=-g -Wall -O0 -std=gnu17 -D_POSIX_C_SOURCE=199309L
+BASE_CFLAGS=-g -Wall -O0 -std=gnu99
 
 ifeq ($(MODE),elp)
   ## Use of timer for Elapsed time
