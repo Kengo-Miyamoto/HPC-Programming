@@ -12,7 +12,7 @@ This sample demonstrates three basic techniques for measuring the performance of
 
 A *hotspot* is a part of a program (a function, loop, or code section) that consumes a disproportionately large share of the total execution time. Because tuning effort pays off most where the program spends most of its time, finding hotspots is the essential first step of performance tuning.
 
-The sample program (`main.c` / `main.f90` / `main.cpp`) calls `sub1` and `sub2`, which in turn call `sub3`, with different call counts and workloads. By timing and profiling them, you will learn how to locate the routines that dominate the execution time.
+The sample program (`main.c` / `main.f90` / `main.cpp`) calls `sub1` and `sub2`, which in turn call `sub3`, with different call counts and workloads. By timing and profiling them, you will learn how to locate hotspots.
 
 ## Directory layout
 ```
@@ -48,7 +48,7 @@ All language variants use the same `MODE` variable to select the **build configu
 | `MODE=cpu` | Build the CPU-time timer version | |
 | `MODE=gprof` | Build with `-pg` for `gprof` profiling | |
 
-Internally, `MODE=elp` and `MODE=cpu` define `-DUSE_ELP_TIMER` and `-DUSE_CPU_TIMER` (C/C++) or select the corresponding Fortran timer, and `MODE=gprof` adds the `-pg` compiler flag. `bash run.sh` accepts the same `MODE=...` argument; only `MODE=gprof` changes its behavior (it runs `gprof` after execution).
+Internally, `MODE=elp` and `MODE=cpu` define `-DUSE_ELP_TIMER` and `-DUSE_CPU_TIMER` (C/C++) or select the corresponding Fortran timer, and `MODE=gprof` adds the `-pg` compiler flag. `bash run.sh` also accepts the same `MODE=...` argument so that the run script knows whether to post-process gprof data.
 
 To switch between `elp`, `cpu`, and `gprof`, rebuild from scratch each time:
 ```text
@@ -248,7 +248,7 @@ For a **multi-threaded program** (e.g., with OpenMP):
    $ cd ../../tests/c
    $ bash run.sh MODE=gprof
    ```
-   - In `MODE=gprof`, `run.sh` automatically sleeps and runs `gprof` after the execution.
+   - In `MODE=gprof`, `run.sh` automatically runs `gprof` after the execution.
 3. In profiling mode, the output includes:
    - `outfile`: program output (`a[0] = ...` lines)
    - `gmon.out`: raw profiling data
@@ -266,7 +266,7 @@ For a **multi-threaded program** (e.g., with OpenMP):
    $ cd ../../tests/fortran
    $ bash run.sh MODE=gprof
    ```
-3. `run.sh` automatically handles profiling: execution, sleep, and `gprof` report generation.
+3. `run.sh` automatically handles profiling: execution and `gprof` report generation.
 4. Examine `prof.out` for the flat profile and call graph to identify hotspots.
 
 #### Fortran with C timer version
@@ -294,7 +294,7 @@ For a **multi-threaded program** (e.g., with OpenMP):
    $ cd ../../tests/cpp
    $ bash run.sh MODE=gprof
    ```
-3. `run.sh` automatically handles profiling: execution, sleep, and `gprof` report generation (`gmon.out` and `prof.out`).
+3. `run.sh` automatically handles profiling: execution and `gprof` report generation (`gmon.out` and `prof.out`).
 4. Examine `prof.out` to identify hotspots.
 
 ### Cleaning Up Profiling Data

@@ -32,7 +32,6 @@ $EXE > outfile
 # Get profiler data
 # Run gprof only when MODE=gprof (expected: binary built with -pg via make MODE=gprof)
 if [ "$MODE" = "gprof" ]; then
-  sleep 10s
   if [ -f gmon.out ]; then
     gprof "$EXE" > prof.out
   else
