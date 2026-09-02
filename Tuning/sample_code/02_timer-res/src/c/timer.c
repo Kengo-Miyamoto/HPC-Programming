@@ -41,23 +41,23 @@ double get_cpu_time () {
   return  tp.tv_sec + (double)tp.tv_nsec*1.0e-9 ;
 }
 
-/* Get resolution */
+/* Get nominal resolution (in seconds), as reported by clock_getres() */
 #if ! defined(USE_REALTIME)
 double get_elp_res () {
   struct timespec res ;
   if ( clock_getres ( CLOCK_MONOTONIC, &res ) != 0 ) return -1.0 ;
-  return res.tv_sec*1.0e6 + (double)res.tv_nsec*1.0e-3 ;
+  return  res.tv_sec + (double)res.tv_nsec*1.0e-9 ;
 }
 #else
 double get_elp_res () {
   struct timespec res ;
   if ( clock_getres ( CLOCK_REALTIME, &res ) != 0 ) return -1.0 ;
-  return res.tv_sec*1.0e6 + (double)res.tv_nsec*1.0e-3 ;
+  return  res.tv_sec + (double)res.tv_nsec*1.0e-9 ;
 }
 #endif
 
 double get_cpu_res () {
   struct timespec res ;
   if ( clock_getres ( CLOCK_PROCESS_CPUTIME_ID, &res ) != 0 ) return -1.0 ;
-  return res.tv_sec*1.0e6 + (double)res.tv_nsec*1.0e-3 ;
+  return  res.tv_sec + (double)res.tv_nsec*1.0e-9 ;
 }
