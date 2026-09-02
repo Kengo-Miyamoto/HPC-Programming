@@ -5,6 +5,11 @@
 !  Description: The original idea comes from Wadleigh and Crawford,
 !               "Software Optimization for HPC: Creating Faster 
 !                Applications" (2000) pp.136-138 
+!  Extended to compare the nominal resolution reported by
+!  system_clock(count_rate=...) with the resolution measured
+!  empirically by the iteration loop. cpu_time() has no API to query
+!  its nominal resolution, so only the measured value is printed for
+!  the CPU timer.
 !*************************************************************************
 
 !=========================================================================
@@ -30,7 +35,7 @@ program main
   integer(int64) :: cnt1, cnt2, cnt_rate, cnt_max
   integer,parameter :: nn_max = 10000000
 
-  real(kind=DP) :: tval, tval0 
+  real(kind=DP) :: tval, tval0, res_api
   real(kind=DP),parameter :: ZERO = 0.0_DP
 
   !! interface to function
@@ -46,6 +51,15 @@ program main
   write(6,'("----------------------------------------------------------")')
 
   !! check resolution of wallclock timer  
+  write(6,'("[Wallclock timer]")')
+  call system_clock (count_rate = cnt_rate)
+  if ( cnt_rate > 0 ) then
+    res_api = 1.0_DP / dble(cnt_rate)
+  else
+    res_api = -1.0_DP
+  end if
+  write(6,'(" [API]      nominal resolution   = ",1F17.9," sec.")') res_api
+
   tval = -1.0_DP 
   nn = 0
   do while ( tval .le. ZERO .and. nn .lt. nn_max )
@@ -65,19 +79,18 @@ program main
   if ( nn .ge. nn_max ) then
     write(6,'("Warning: wallclock timer resolution could not be determined.")')
   else
-    write(6,'("[Check resolution of wallclock timer]")')
-    write(6,'("It took ",1I7," &
-&   iterations to generate a non-zero time")') nn 
-    if ( nn == 1 ) then
-      write(6,'(" timer resolution less than or equal to ",1F15.9)') tval
-    else
-      write(6,'(" timer resolution is ",1F15.9," sec.")') tval
+    write(6,'(" [Measured] observed resolution  = ",1F17.9," sec. (nn = ",1I0," iterations)")') tval, nn
+    if ( res_api > ZERO ) then
+      write(6,'(" ratio (measured / API)          = ",1F13.2)') tval / res_api
     end if
   end if
 
   write(6,'("----------------------------------------------------------")')
 
   !! check resolution of cpu timer  
+  write(6,'("[CPU timer]")')
+  write(6,'(" [API]      no nominal-resolution API is available for cpu_time()")')
+
   tval = -1.0_DP 
   nn = 0
   do while ( tval .le. ZERO .and. nn .lt. nn_max )
@@ -91,14 +104,7 @@ program main
   if ( nn .ge. nn_max ) then
     write(6,'("Warning: cpu timer resolution could not be determined.")')
   else
-    write(6,'("[Check resolution of cpu timer]")')
-    write(6,'("It took ",1I7," &
-&   iterations to generate a non-zero time")') nn 
-    if ( nn == 1 ) then
-      write(6,'(" timer resolution less than or equal to ",1F15.9)') tval
-    else
-      write(6,'(" timer resolution is ",1F15.9," sec.")') tval
-    end if
+    write(6,'(" [Measured] observed resolution  = ",1F17.9," sec. (nn = ",1I0," iterations)")') tval, nn
   end if
 
   write(6,'("----------------------------------------------------------")')
