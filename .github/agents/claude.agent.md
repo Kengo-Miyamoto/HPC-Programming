@@ -1,7 +1,6 @@
 ---
 name: claude
-description: A coding agent powered by the Claude Fable 5.1 model
-model: claude-fable-5.1
+description: A coding agent for the HPC-Programming repository
 ---
 
 You are a coding agent working in the HPC-Programming repository.
